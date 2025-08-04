@@ -283,30 +283,23 @@ def get_step_title(step):
     return titles.get(step, f"Paso {step}")
 
 def step_1_upload_document():
-    # Configuración de API Key en un panel compacto
-    with st.container():
-        col1, col2 = st.columns([2, 1])
-        with col1:
-            st.markdown("### 🔑 Configuración de IA")
-            api_key_input = st.text_input(
-                "Google Gemini API Key",
-                value=st.session_state.get("gemini_api_key", os.getenv("GEMINI_API_KEY", "")),
-                type="password",
-                help="Ingresa tu API Key de Google Gemini",
-                placeholder="AIzaSyB..."
-            )
-        with col2:
-            st.markdown("### Acciones")
-            if st.button("🔗 Conectar IA", type="primary", use_container_width=True):
-                if connect_ai_with_key(api_key_input):
-                    st.success("✅ IA conectada")
-                else:
-                    st.warning("⚠️ Error de conexión")
-            if st.button("🗑️ Borrar clave", use_container_width=True):
-                st.session_state.pop("gemini_api_key", None)
-                st.session_state.pop("ai_analyzer", None)
+    # Conexión automática de IA (oculta al usuario)
+    if not st.session_state.get('ai_connected', False):
+        # Intentar conectar automáticamente con la API key del entorno
+        api_key = os.getenv("GEMINI_API_KEY", "")
+        if api_key:
+            if connect_ai_with_key(api_key):
+                st.session_state.ai_connected = True
+            else:
                 st.session_state.ai_connected = False
-                st.info("Clave eliminada")
+        else:
+            st.session_state.ai_connected = False
+    
+    # Mostrar estado de conexión de manera discreta
+    if st.session_state.get('ai_connected', False):
+        st.success("🤖 IA Conectada", icon="✅")
+    else:
+        st.info("⚠️ Modo Simulado - La IA funcionará con respuestas predefinidas", icon="ℹ️")
     
     st.divider()
     
@@ -349,6 +342,7 @@ def step_1_upload_document():
         if st.button("🔍 Continuar al Análisis", type="primary"):
             st.session_state.current_step = 2
             st.session_state.progress = 20
+            st.rerun()
 
 def step_2_analyze_document():
     # Si el análisis no está completo, mostrar botón para iniciar
@@ -356,7 +350,7 @@ def step_2_analyze_document():
         st.markdown("### 🔍 Iniciar Análisis")
         st.info("📋 El documento será analizado por la IA para identificar su contenido y estructura")
         
-        if st.button("🔍 Iniciar Análisis con IA", type="primary", use_container_width=True):
+        if st.button("🔍 Iniciar Análisis con IA", type="primary", key="start_analysis", use_container_width=True):
             with st.spinner("Analizando documento con IA..."):
                 # Simular tiempo de análisis
                 progress_bar = st.progress(0)
@@ -470,7 +464,10 @@ def step_3_detect_problems():
         st.markdown("### ⚠️ Detectar Problemas")
         st.info("📋 La IA analizará el documento para identificar problemas formales y materiales que requieren atención")
         
-        if st.button("⚠️ Detectar Problemas con IA", type="primary", use_container_width=True):
+        if st.button("⚠️ Detectar Problemas con IA", type="primary", key="detect_problems", use_container_width=True):
+            # Debug: Mostrar estado actual
+            st.info(f"🔄 Estado actual: problems_detected = {st.session_state.get('problems_detected', False)}")
+            
             with st.spinner("Detectando problemas con IA..."):
                 time.sleep(1.5)
                 
@@ -486,13 +483,31 @@ def step_3_detect_problems():
                         else:
                             raise Exception("No se pudieron detectar problemas")
                     except Exception as e:
-                        st.error(f"❌ Error en detección IA: {str(e)}")
-                        # Fallback a problemas simulados
+                        error_msg = str(e)
+                        if "Cuota de Google Gemini excedida" in error_msg or "quota" in error_msg.lower():
+                            st.warning("⚠️ Cuota de IA excedida - Continuando en modo simulado")
+                            st.info("💡 La aplicación detectará problemas usando análisis predefinido")
+                        else:
+                            st.error(f"❌ Error en detección IA: {error_msg}")
+                        
+                        # Fallback a problemas simulados mejorados
                         problems = [
                             {
-                                "tipo": "Error de análisis",
-                                "descripcion": f"Error al procesar con IA: {str(e)}",
+                                "tipo": "Falta información",
+                                "descripcion": "No se especifica claramente la autoridad requerida",
                                 "severidad": "Media",
+                                "linea": "N/A"
+                            },
+                            {
+                                "tipo": "Formato",
+                                "descripcion": "El documento no tiene número de radicado",
+                                "severidad": "Alta",
+                                "linea": "N/A"
+                            },
+                            {
+                                "tipo": "Fundamentación",
+                                "descripcion": "No se cita la normativa aplicable",
+                                "severidad": "Baja",
                                 "linea": "N/A"
                             }
                         ]
@@ -523,6 +538,8 @@ def step_3_detect_problems():
                 
                 st.success("✅ Problemas detectados")
                 st.session_state.problems_detected = True
+                # Debug: Confirmar actualización
+                st.success(f"✅ Estado actualizado: problems_detected = {st.session_state.problems_detected}")
                 st.rerun()
     
     # Si los problemas están detectados, mostrar resultados y botón para continuar
@@ -578,7 +595,10 @@ def step_4_generate_recommendations():
         st.markdown("### 💡 Generar Recomendaciones")
         st.info("📋 La IA analizará los problemas detectados y generará recomendaciones específicas para mejorar la contestación")
         
-        if st.button("💡 Generar Recomendaciones con IA", type="primary", use_container_width=True):
+        if st.button("💡 Generar Recomendaciones con IA", type="primary", key="generate_recommendations", use_container_width=True):
+            # Debug: Mostrar estado actual
+            st.info(f"🔄 Estado actual: recommendations_generated = {st.session_state.get('recommendations_generated', False)}")
+            
             with st.spinner("Generando recomendaciones con IA..."):
                 time.sleep(1.5)
                 
@@ -594,8 +614,14 @@ def step_4_generate_recommendations():
                         else:
                             raise Exception("No se pudieron generar recomendaciones")
                     except Exception as e:
-                        st.error(f"❌ Error en generación IA: {str(e)}")
-                        # Fallback a recomendaciones simuladas
+                        error_msg = str(e)
+                        if "Cuota de Google Gemini excedida" in error_msg or "quota" in error_msg.lower():
+                            st.warning("⚠️ Cuota de IA excedida - Continuando en modo simulado")
+                            st.info("💡 La aplicación generará recomendaciones usando análisis predefinido")
+                        else:
+                            st.error(f"❌ Error en generación IA: {error_msg}")
+                        
+                        # Fallback a recomendaciones simuladas mejoradas
                         recommendations = [
                             {
                                 "titulo": "Fundamentación legal",
@@ -608,6 +634,12 @@ def step_4_generate_recommendations():
                                 "descripcion": "Organizar la contestación en secciones claras",
                                 "prioridad": "Media",
                                 "accion": "Usar formato estructurado"
+                            },
+                            {
+                                "titulo": "Competencia clara",
+                                "descripcion": "Especificar la autoridad competente para resolver la petición",
+                                "prioridad": "Alta",
+                                "accion": "Incluir fundamento legal de competencia"
                             }
                         ]
                         st.session_state.recommendations = recommendations
@@ -666,6 +698,8 @@ def step_4_generate_recommendations():
                     st.divider()
                 
                 st.session_state.recommendations_generated = True
+                # Debug: Confirmar actualización
+                st.success(f"✅ Estado actualizado: recommendations_generated = {st.session_state.recommendations_generated}")
                 st.rerun()
     
     # Si las recomendaciones están generadas, mostrar resultados y botón para continuar
@@ -768,18 +802,33 @@ def step_5_chat_system():
                         }
                         response = st.session_state.ai_analyzer.chat_response(user_question, context)
                     except Exception as e:
-                        response = f"Lo siento, hubo un error al procesar tu pregunta: {str(e)}"
+                        error_msg = str(e)
+                        if "Cuota de Google Gemini excedida" in error_msg or "quota" in error_msg.lower():
+                            response = "Lo siento, actualmente no puedo procesar tu pregunta debido a limitaciones técnicas. Te sugiero revisar las recomendaciones y problemas ya generados para obtener orientación sobre cómo mejorar la contestación."
+                        else:
+                            response = f"Lo siento, hubo un error al procesar tu pregunta: {error_msg}"
                 else:
-                    # Respuestas simuladas mejoradas
-                    responses = [
-                        "Gracias por tu pregunta. Basándome en el análisis del documento, puedo ayudarte con información sobre los problemas detectados y las recomendaciones generadas.",
-                        "El sistema ha identificado varios problemas en el documento que requieren atención. Te recomiendo revisar las recomendaciones generadas para mejorar la contestación.",
-                        "Basándome en el análisis realizado, puedo sugerir que consideres incluir fundamentación legal específica y citar las normas aplicables.",
-                        "Para una contestación más efectiva, asegúrate de especificar claramente la competencia de la entidad y fundamentar adecuadamente las decisiones.",
-                        "Según el análisis del documento, es importante estructurar la respuesta de manera clara y concisa, incluyendo todos los elementos requeridos por la normativa vigente.",
-                        "El sistema detectó que faltan elementos importantes en el documento. Te sugiero revisar las recomendaciones para asegurar una contestación completa y conforme a la ley."
-                    ]
-                    response = random.choice(responses)
+                    # Respuestas simuladas mejoradas y específicas
+                    if "mejorar" in user_question.lower() or "contestación" in user_question.lower():
+                        response = "Para mejorar la contestación, te recomiendo: 1) Incluir fundamentación legal específica citando el Código de Procedimiento Administrativo, 2) Especificar claramente la competencia de la entidad, 3) Estructurar la respuesta en secciones claras, y 4) Asegurar que todos los elementos requeridos estén presentes."
+                    elif "problema" in user_question.lower() or "crítico" in user_question.lower():
+                        response = "Los problemas más críticos identificados son: falta de fundamentación legal específica, ausencia de número de radicado, y no especificación clara de la autoridad competente. Estos elementos son esenciales para una contestación válida."
+                    elif "recomendación" in user_question.lower() or "prioritaria" in user_question.lower():
+                        response = "Las recomendaciones prioritarias son: 1) Incluir citas específicas de la normativa aplicable, 2) Especificar la autoridad competente con fundamento legal, y 3) Usar un formato estructurado para la contestación."
+                    elif "normativa" in user_question.lower() or "citar" in user_question.lower():
+                        response = "Debes citar específicamente: el Código de Procedimiento Administrativo, la Constitución Política en lo relacionado con el derecho de petición, y las normas específicas de tu entidad que regulen el trámite de peticiones."
+                    elif "estructurar" in user_question.lower() or "formato" in user_question.lower():
+                        response = "Para estructurar mejor la contestación: 1) Encabezado con datos de la entidad, 2) Referencia al derecho de petición, 3) Fundamentación legal específica, 4) Decisión o respuesta clara, 5) Recursos disponibles, y 6) Firma de la autoridad competente."
+                    else:
+                        responses = [
+                            "Gracias por tu pregunta. Basándome en el análisis del documento, puedo ayudarte con información sobre los problemas detectados y las recomendaciones generadas.",
+                            "El sistema ha identificado varios problemas en el documento que requieren atención. Te recomiendo revisar las recomendaciones generadas para mejorar la contestación.",
+                            "Basándome en el análisis realizado, puedo sugerir que consideres incluir fundamentación legal específica y citar las normas aplicables.",
+                            "Para una contestación más efectiva, asegúrate de especificar claramente la competencia de la entidad y fundamentar adecuadamente las decisiones.",
+                            "Según el análisis del documento, es importante estructurar la respuesta de manera clara y concisa, incluyendo todos los elementos requeridos por la normativa vigente.",
+                            "El sistema detectó que faltan elementos importantes en el documento. Te sugiero revisar las recomendaciones para asegurar una contestación completa y conforme a la ley."
+                        ]
+                        response = random.choice(responses)
                 
                 # Agregar al historial
                 st.session_state.chat_history.append({
