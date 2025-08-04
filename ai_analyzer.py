@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Any, Dict, List
 import google.generativeai as genai
 
-MODEL_DEFAULT = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+MODEL_DEFAULT = os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp")
 
 def _extract_json_block(text: str) -> str:
     """Extrae el primer bloque JSON válido ({...} o [...]) de un texto."""

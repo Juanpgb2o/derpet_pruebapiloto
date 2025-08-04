@@ -10,7 +10,7 @@ install.bat
 ```
 
 ### 2. Configurar API Key (Opcional)
-Para usar la IA completa, necesitas una API Key de OpenAI:
+Para usar la IA completa, necesitas una API Key de Google Gemini:
 
 **Opción A: Script automático**
 ```bash
@@ -18,11 +18,12 @@ setup_api_key.bat
 ```
 
 **Opción B: Manual**
-1. Ve a https://platform.openai.com/api-keys
+1. Ve a https://makersuite.google.com/app/apikey
 2. Crea una nueva API Key
 3. Crea un archivo `.env` con:
 ```
-OPENAI_API_KEY=sk-tu_clave_aqui
+GEMINI_API_KEY=tu_clave_aqui
+GEMINI_MODEL=gemini-2.0-flash-exp
 STREAMLIT_SERVER_PORT=8501
 STREAMLIT_SERVER_ADDRESS=localhost
 LOG_LEVEL=INFO
@@ -43,13 +44,14 @@ py -m streamlit run app.py --server.port 8501
 ### ❌ Error: "API Key inválida"
 **Solución:**
 1. Ejecuta `setup_api_key.bat`
-2. O verifica tu clave en https://platform.openai.com/api-keys
-3. Asegúrate de que la clave empiece con `sk-`
+2. O verifica tu clave en https://makersuite.google.com/app/apikey
+3. Asegúrate de que la clave sea válida
 
-### ❌ Error: "Límite de uso excedido"
+### ❌ Error: "Cuota excedida"
 **Solución:**
-- Espera unos minutos antes de intentar nuevamente
-- Verifica tu saldo en https://platform.openai.com/account/usage
+- Verifica tu saldo en https://makersuite.google.com/app/apikey
+- Gemini tiene cuota gratuita generosa
+- La aplicación funcionará en modo simulado
 
 ### ❌ Error: "Dependencias no encontradas"
 **Solución:**
@@ -81,8 +83,8 @@ py -m streamlit run app.py --server.port 8502
 ## 🎯 Modos de Uso
 
 ### 🤖 Modo IA Completa
-- Requiere API Key de OpenAI
-- Análisis detallado con GPT
+- Requiere API Key de Google Gemini
+- Análisis detallado con Gemini 2.0 Flash
 - Recomendaciones personalizadas
 - Chat interactivo
 
