@@ -1,0 +1,15 @@
+# Core Streamlit - REQUERIDO
+streamlit==1.47.1
+
+# Environment and configuration - REQUERIDO
+python-dotenv==1.0.0
+
+# Document processing - REQUERIDO para procesar PDF y DOCX
+PyPDF2==3.0.1
+docx2txt==0.8
+
+# NOTA: Esta versión mínima NO incluye:
+# - openai (para funcionalidad de IA)
+# - pandas/numpy (para métricas avanzadas)
+# 
+# La aplicación funcionará en modo simulado sin estas dependencias 
