@@ -1,4 +1,4 @@
-# 🚀 Mejoras Implementadas con Google Gemini 1.5 Flash
+# 🚀 Mejoras Implementadas con Google Gemini 2.0 Flash Exp
 
 ## ✅ **Detección de Problemas Mejorada**
 
@@ -130,5 +130,5 @@
 ---
 
 **Estado Actual**: ✅ **Implementado y Funcionando**
-**Versión**: Google Gemini 1.5 Flash
+**Versión**: Google Gemini 2.0 Flash Exp
 **Última Actualización**: Agosto 2024 

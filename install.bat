@@ -40,7 +40,7 @@ echo ✅ Dependencias instaladas
 echo.
 
 echo Verificando instalación...
-python -c "import streamlit, pandas, numpy, openai, dotenv, PyPDF2, docx2txt; print('✅ Todas las dependencias están instaladas')"
+python -c "import streamlit, pandas, numpy, google.generativeai, dotenv, PyPDF2, docx2txt; print('✅ Todas las dependencias están instaladas')"
 if errorlevel 1 (
     echo ERROR: Algunas dependencias no se instalaron correctamente
     pause

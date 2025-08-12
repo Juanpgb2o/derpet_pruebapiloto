@@ -27,7 +27,7 @@ if exist ".streamlit" (
 
 echo.
 echo Verificando dependencias...
-python -c "import streamlit, pandas, numpy, openai, dotenv, PyPDF2, docx2txt; print('✅ Todas las dependencias están disponibles')"
+python -c "import streamlit, pandas, numpy, google.generativeai, dotenv, PyPDF2, docx2txt; print('✅ Todas las dependencias están disponibles')"
 if errorlevel 1 (
     echo ⚠️ Algunas dependencias pueden tener problemas
     echo Ejecuta install.bat para reinstalar

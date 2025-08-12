@@ -84,7 +84,7 @@ py -m streamlit run app.py --server.port 8502
 
 ### 🤖 Modo IA Completa
 - Requiere API Key de Google Gemini
-- Análisis detallado con Gemini 2.0 Flash
+- Análisis detallado con Gemini 2.0 Flash Exp
 - Recomendaciones personalizadas
 - Chat interactivo
 

@@ -1,10 +1,10 @@
-# Changelog - Migración a Google Gemini 1.5 Flash
+# Changelog - Migración a Google Gemini 2.0 Flash Exp
 
 ## ✅ Cambios Completados
 
 ### 🔄 Migración de OpenAI a Google Gemini
 - **Antes**: OpenAI GPT-3.5-turbo
-- **Ahora**: Google Gemini 1.5 Flash
+- **Ahora**: Google Gemini 2.0 Flash Exp
 - **Beneficios**: 
   - Cuota gratuita más generosa
   - Mejor rendimiento
@@ -23,7 +23,7 @@ google-generativeai>=0.6.0
 
 #### 1. `ai_analyzer.py`
 - ✅ Cambiado de `openai` a `google.generativeai`
-- ✅ Modelo actualizado a `gemini-1.5-flash`
+- ✅ Modelo actualizado a `gemini-2.0-flash-exp`
 - ✅ Manejo de errores mejorado para Gemini
 - ✅ Prompts optimizados para el nuevo modelo
 
@@ -67,7 +67,7 @@ google-generativeai>=0.6.0
    GEMINI_API_KEY=tu_clave_aqui
    ```
 
-### 📊 Ventajas de Gemini 1.5 Flash
+### 📊 Ventajas de Gemini 2.0 Flash Exp
 - **Velocidad**: Respuestas más rápidas
 - **Costo**: Cuota gratuita generosa
 - **Calidad**: Análisis más preciso
@@ -79,6 +79,6 @@ google-generativeai>=0.6.0
 - **Modo simulado**: Funciona sin API Key para pruebas
 
 ### 🎯 Estado Actual
-✅ **COMPLETADO**: Migración exitosa a Google Gemini 1.5 Flash
+✅ **COMPLETADO**: Migración exitosa a Google Gemini 2.0 Flash Exp
 ✅ **FUNCIONANDO**: Aplicación ejecutándose en http://localhost:8501
 ✅ **OPTIMIZADO**: Dependencias actualizadas y compatibles 
